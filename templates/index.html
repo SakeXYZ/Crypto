@@ -3,36 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Курс криптовалют</title>
+    <title>Cryptocurrency Prices</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Основные стили для страницы */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px 0;
+            font-size: 2.5rem;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            max-width: 800px;
+            margin-bottom: 40px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Медиазапросы для адаптивности */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .chart-container {
+                height: 200px;
+            }
+
+            .button {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Курс криптовалют</h1>
-    <div id="btc-price">Загрузка данных...</div>
-    <div id="eth-price">Загрузка данных...</div>
-    <div id="ltc-price">Загрузка данных...</div>
+    <h1>Cryptocurrency Prices</h1>
+
+    <!-- Контейнеры для графиков -->
+    <div class="chart-container">
+        <canvas id="btcChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="ethChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="ltcChart"></canvas>
+    </div>
+
+    <!-- Кнопка для обновления цен -->
+    <button class="button" onclick="fetchPrices()">Refresh Prices</button>
 
     <script>
+        // Контексты для графиков
+        const ctxBTC = document.getElementById('btcChart').getContext('2d');
+        const ctxETH = document.getElementById('ethChart').getContext('2d');
+        const ctxLTC = document.getElementById('ltcChart').getContext('2d');
+
+        // Графики для BTC, ETH, LTC
+        const btcChart = new Chart(ctxBTC, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'BTC/USDT',
+                    data: [],
+                    borderColor: '#ff5733',
+                    backgroundColor: 'rgba(255, 87, 51, 0.2)',
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { type: 'linear', position: 'bottom' }
+                }
+            }
+        });
+
+        const ethChart = new Chart(ctxETH, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'ETH/USDT',
+                    data: [],
+                    borderColor: '#33c3ff',
+                    backgroundColor: 'rgba(51, 195, 255, 0.2)',
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { type: 'linear', position: 'bottom' }
+                }
+            }
+        });
+
+        const ltcChart = new Chart(ctxLTC, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'LTC/USDT',
+                    data: [],
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { type: 'linear', position: 'bottom' }
+                }
+            }
+        });
+
+        // Данные цен криптовалют
+        const pricesData = {
+            BTC: [],
+            ETH: [],
+            LTC: []
+        };
+
+        // Функция для получения данных о ценах
         function fetchPrices() {
-            fetch('/get_price/')  // Делаем запрос к API для получения цен
-                .then(response => response.json())  // Получаем данные в формате JSON
+            fetch('/get_price/')
+                .then(response => response.json())
                 .then(data => {
-                    document.getElementById('btc-price').innerText = 'BTC/USDT: ' + data.BTC + ' USDT';  // Обновляем цену BTC
-                    document.getElementById('eth-price').innerText = 'ETH/USDT: ' + data.ETH + ' USDT';  // Обновляем цену ETH
-                    document.getElementById('ltc-price').innerText = 'LTC/USDT: ' + data.LTC + ' USDT';  // Обновляем цену LTC
+                    const currentTime = Date.now();
+
+                    // Добавляем данные о ценах
+                    pricesData.BTC.push(data.BTC);
+                    pricesData.ETH.push(data.ETH);
+                    pricesData.LTC.push(data.LTC);
+
+                    // Ограничиваем количество точек данных на графике
+                    if (pricesData.BTC.length > 20) {
+                        pricesData.BTC.shift();
+                        pricesData.ETH.shift();
+                        pricesData.LTC.shift();
+                    }
+
+                    // Обновляем графики с новыми данными
+                    btcChart.data.labels.push(currentTime);
+                    ethChart.data.labels.push(currentTime);
+                    ltcChart.data.labels.push(currentTime);
+
+                    btcChart.data.datasets[0].data.push(data.BTC);
+                    ethChart.data.datasets[0].data.push(data.ETH);
+                    ltcChart.data.datasets[0].data.push(data.LTC);
+
+                    // Обновляем графики
+                    btcChart.update();
+                    ethChart.update();
+                    ltcChart.update();
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
-                    document.getElementById('btc-price').innerText = "Ошибка загрузки данных для BTC.";
-                    document.getElementById('eth-price').innerText = "Ошибка загрузки данных для ETH.";
-                    document.getElementById('ltc-price').innerText = "Ошибка загрузки данных для LTC.";
                 });
         }
 
-        // Обновляем данные каждые 10 секунд
+        // Обновление данных каждые 10 секунд
         setInterval(fetchPrices, 10000);
-
-        // Первоначальная загрузка
-        fetchPrices();
+        fetchPrices();  // Первоначальная загрузка данных
     </script>
 </body>
 </html>
