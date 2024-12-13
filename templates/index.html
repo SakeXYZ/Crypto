@@ -13,51 +13,83 @@
             padding: 0;
             background-color: #f5f5f5;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
+            flex-direction: column;
+            min-height: 100vh; /* Используем всю высоту экрана */
+            overflow-y: auto; /* Разрешаем вертикальный скроллинг */
         }
 
         h1 {
-            margin: 20px 0;
+            margin-top: 0;
             font-size: 2.5rem;
+            color: #333;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .chart-container {
             width: 100%;
-            height: 300px;
-            max-width: 800px;
-            margin-bottom: 40px;
+            height: 400px;
+        }
+
+        .description {
+            font-size: 1rem;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .description h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .button-container {
+            margin-top: 20px;
         }
 
         .button {
-            padding: 10px 20px;
+            padding: 12px 25px;
             background-color: #3498db;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-bottom: 20px;
             font-size: 1rem;
+            transition: transform 0.3s ease, background-color 0.3s ease;
         }
 
+        /* Эффект увеличения и изменения цвета при наведении */
         .button:hover {
             background-color: #2980b9;
+            transform: scale(1.1); /* Увеличение размера кнопки */
         }
 
-        /* Медиазапросы для адаптивности */
+        /* Адаптивность */
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
             }
 
             .chart-container {
-                height: 250px;
+                height: 300px;
             }
 
             .button {
-                padding: 8px 16px;
+                padding: 10px 20px;
                 font-size: 0.9rem;
             }
         }
@@ -68,11 +100,11 @@
             }
 
             .chart-container {
-                height: 200px;
+                height: 250px;
             }
 
             .button {
-                padding: 6px 12px;
+                padding: 8px 16px;
                 font-size: 0.8rem;
             }
         }
@@ -81,19 +113,46 @@
 <body>
     <h1>Cryptocurrency Prices</h1>
 
-    <!-- Контейнеры для графиков -->
-    <div class="chart-container">
-        <canvas id="btcChart"></canvas>
-    </div>
-    <div class="chart-container">
-        <canvas id="ethChart"></canvas>
-    </div>
-    <div class="chart-container">
-        <canvas id="ltcChart"></canvas>
-    </div>
+    <div class="content">
+        <!-- Графики для криптовалют -->
+        <div class="chart-container">
+            <canvas id="btcChart"></canvas>
+        </div>
+        <div class="description">
+            <h3>Bitcoin (BTC)</h3>
+            <p>
+                <a href="https://en.wikipedia.org/wiki/Bitcoin" target="_blank">Learn more about Bitcoin (BTC)</a>
+            </p>
+            <p>Bitcoin is a decentralized digital currency that allows peer-to-peer transactions over the internet without the need for a central authority. It was invented by an unknown person or group of people using the pseudonym Satoshi Nakamoto in 2008.</p>
+        </div>
 
-    <!-- Кнопка для обновления цен -->
-    <button class="button" onclick="fetchPrices()">Refresh Prices</button>
+        <div class="chart-container">
+            <canvas id="ethChart"></canvas>
+        </div>
+        <div class="description">
+            <h3>Ethereum (ETH)</h3>
+            <p>
+                <a href="https://en.wikipedia.org/wiki/Ethereum" target="_blank">Learn more about Ethereum (ETH)</a>
+            </p>
+            <p>Ethereum is an open-source blockchain platform that enables developers to create and deploy decentralized applications (dApps) through smart contracts. It was proposed by Vitalik Buterin in late 2013 and launched in 2015.</p>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="ltcChart"></canvas>
+        </div>
+        <div class="description">
+            <h3>Litecoin (LTC)</h3>
+            <p>
+                <a href="https://en.wikipedia.org/wiki/Litecoin" target="_blank">Learn more about Litecoin (LTC)</a>
+            </p>
+            <p>Litecoin is a peer-to-peer cryptocurrency created by Charlie Lee in 2011. It is based on the Bitcoin protocol but with several key differences, including a faster block generation time and a different hashing algorithm.</p>
+        </div>
+
+        <!-- Кнопка для обновления цен -->
+        <div class="button-container">
+            <button class="button" onclick="fetchPrices()">Refresh Prices</button>
+        </div>
+    </div>
 
     <script>
         // Контексты для графиков
@@ -211,7 +270,7 @@
         }
 
         // Обновление данных каждые 3 секунд
-        setInterval(fetchPrices, 3000);
+        setInterval(fetchPrices, 10000);
         fetchPrices();  // Первоначальная загрузка данных
     </script>
 </body>
