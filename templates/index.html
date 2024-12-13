@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курс криптовалют</title>
+</head>
+<body>
+    <h1>Курс криптовалют</h1>
+    <div id="btc-price">Загрузка данных...</div>
+    <div id="eth-price">Загрузка данных...</div>
+    <div id="ltc-price">Загрузка данных...</div>
+
+    <script>
+        function fetchPrices() {
+            fetch('/get_price/')  // Делаем запрос к API для получения цен
+                .then(response => response.json())  // Получаем данные в формате JSON
+                .then(data => {
+                    document.getElementById('btc-price').innerText = 'BTC/USDT: ' + data.BTC + ' USDT';  // Обновляем цену BTC
+                    document.getElementById('eth-price').innerText = 'ETH/USDT: ' + data.ETH + ' USDT';  // Обновляем цену ETH
+                    document.getElementById('ltc-price').innerText = 'LTC/USDT: ' + data.LTC + ' USDT';  // Обновляем цену LTC
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    document.getElementById('btc-price').innerText = "Ошибка загрузки данных для BTC.";
+                    document.getElementById('eth-price').innerText = "Ошибка загрузки данных для ETH.";
+                    document.getElementById('ltc-price').innerText = "Ошибка загрузки данных для LTC.";
+                });
+        }
+
+        // Обновляем данные каждые 10 секунд
+        setInterval(fetchPrices, 10000);
+
+        // Первоначальная загрузка
+        fetchPrices();
+    </script>
+</body>
+</html>

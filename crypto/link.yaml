@@ -1,0 +1,3 @@
+BinanceETHUSDT: "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT"
+BinanceLTCUSDT: "https://api.binance.com/api/v3/ticker/price?symbol=LTCUSDT"
+BinanceBTCUSDT: "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
